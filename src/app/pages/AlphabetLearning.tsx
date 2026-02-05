@@ -1,0 +1,223 @@
+import { motion } from "motion/react";
+import { useState, useEffect } from "react";
+import { ChevronLeft, Volume2 } from "lucide-react";
+import { LargeButton } from "@/app/components/LargeButton";
+import { ProgressStars } from "@/app/components/ProgressStars";
+import { CharacterMascot } from "@/app/components/CharacterMascot";
+import { KidsNavBar } from "@/app/components/KidsNavBar";
+import { useNavigate } from "react-router";
+import { alphabetLessons } from "@/data/alphabetContent";
+import { speechService } from "@/services/speechService";
+import { audioService } from "@/services/audioService";
+import { authService } from "@/services/authService";
+
+export function AlphabetLearning() {
+  const navigate = useNavigate();
+  const [currentLetter, setCurrentLetter] = useState(0);
+  const [showReward, setShowReward] = useState(false);
+
+  const current = alphabetLessons[currentLetter];
+
+  useEffect(() => {
+    // Update streak when starting lesson
+    authService.updateStreak();
+  }, []);
+
+  const handleNext = () => {
+    audioService.playClick();
+    
+    if (currentLetter < alphabetLessons.length - 1) {
+      setCurrentLetter(currentLetter + 1);
+      authService.addStars(1);
+    } else {
+      setShowReward(true);
+      audioService.playReward();
+      authService.completeLesson(`alphabet_${current.letter}`, 'alphabet');
+      authService.addStars(5);
+      
+      setTimeout(() => {
+        navigate("/home");
+      }, 3000);
+    }
+  };
+
+  const playSound = () => {
+    audioService.playClick();
+    // Speak the letter and word
+    speechService.speak(`${current.letter}. ${current.word}`, 'uz-UZ');
+  };
+
+  if (showReward) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-100 flex flex-col items-center justify-center p-6">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="text-center"
+        >
+          <CharacterMascot mood="celebrating" size="lg" animate />
+          <h2 className="text-4xl font-bold text-gray-800 mt-6 mb-4">
+            Ajoyib! 🎉
+          </h2>
+          <p className="text-2xl text-gray-700 mb-6">
+            Barcha harflarni o'rgandingiz!
+          </p>
+          <ProgressStars earned={5} total={5} size="lg" />
+          <p className="text-xl text-gray-600 mt-6">
+            +5 yulduz qo'shildi! ⭐
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 pb-24">
+      {/* Header */}
+      <div className="bg-white rounded-b-[3rem] shadow-lg p-6 mb-6">
+        <div className="max-w-md mx-auto flex items-center justify-between">
+          <button
+            onClick={() => {
+              audioService.playClick();
+              navigate("/home");
+            }}
+            className="p-3 bg-gray-100 rounded-2xl"
+          >
+            <ChevronLeft className="h-6 w-6 text-gray-700" />
+          </button>
+          
+          <div className="flex-1 mx-4">
+            <div className="flex gap-2">
+              {alphabetLessons.map((_, index) => (
+                <div
+                  key={index}
+                  className={`flex-1 h-2 rounded-full ${
+                    index <= currentLetter
+                      ? "bg-gradient-to-r from-green-400 to-emerald-400"
+                      : "bg-gray-200"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="text-sm font-bold text-purple-600">
+            {currentLetter + 1}/{alphabetLessons.length}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-md mx-auto px-6">
+        {/* Character helper */}
+        <motion.div
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className="flex items-center gap-4 mb-8 bg-white rounded-3xl p-4 shadow-md"
+        >
+          <CharacterMascot mood="happy" size="sm" />
+          <div className="bg-white rounded-2xl p-3 shadow-sm flex-1">
+            <p className="text-lg font-semibold text-gray-800">
+              Keling, "{current.letter}" harfini o'rganamiz! 🎯
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Letter Display */}
+        <motion.div
+          key={currentLetter}
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", duration: 0.8 }}
+          className={`
+            bg-gradient-to-br ${current.color}
+            rounded-[4rem] p-12 shadow-2xl mb-8
+            relative overflow-hidden
+          `}
+        >
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full" />
+          <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white/10 rounded-full" />
+
+          <motion.div
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="text-center relative z-10"
+          >
+            <div className="text-[12rem] font-bold text-white leading-none mb-4">
+              {current.letter}
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* Word Example */}
+        <motion.div
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white rounded-3xl p-8 shadow-lg mb-6 text-center"
+        >
+          <div className="text-8xl mb-4">{current.emoji}</div>
+          <div className="text-4xl font-bold text-gray-800 mb-2">
+            {current.word}
+          </div>
+          <div className="text-xl text-gray-500 mb-4">
+            {current.wordEnglish}
+          </div>
+          <div className="text-2xl text-gray-600">
+            {current.word.split('').map((char, i) => (
+              <span
+                key={i}
+                className={char.toUpperCase() === current.letter ? "text-purple-600 font-bold" : ""}
+              >
+                {char}
+              </span>
+            ))}
+          </div>
+          
+          {/* Story */}
+          <div className="mt-4 p-4 bg-purple-50 rounded-2xl">
+            <p className="text-sm text-gray-700">{current.story}</p>
+          </div>
+          
+          {/* Examples */}
+          <div className="mt-4">
+            <p className="text-sm font-bold text-gray-700 mb-2">Boshqa misollar:</p>
+            <div className="flex gap-2 justify-center flex-wrap">
+              {current.examples.map((example, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold"
+                >
+                  {example}
+                </span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Action Buttons */}
+        <div className="space-y-4 mb-8">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={playSound}
+            className="w-full py-6 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-3xl shadow-lg text-white font-bold text-xl flex items-center justify-center gap-3"
+          >
+            <Volume2 className="h-8 w-8" />
+            Eshitish 🔊
+          </motion.button>
+
+          <LargeButton
+            color="green"
+            icon="✅"
+            onClick={handleNext}
+          >
+            {currentLetter < alphabetLessons.length - 1 ? "Keyingisi" : "Tugadi!"}
+          </LargeButton>
+        </div>
+      </div>
+
+      <KidsNavBar />
+    </div>
+  );
+}

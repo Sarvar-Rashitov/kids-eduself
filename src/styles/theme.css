@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+/* EduSelf Kids - Child-Friendly Theme */
+
+:root {
+  /* Primary Colors - Soft and friendly */
+  --color-primary-blue: #5eb3f6;
+  --color-primary-purple: #a78bfa;
+  --color-primary-turquoise: #5fd4d4;
+  
+  /* Secondary Colors - Playful */
+  --color-secondary-yellow: #ffd966;
+  --color-secondary-mint: #7ee8c5;
+  --color-secondary-coral: #ff9999;
+  --color-secondary-pink: #ffb3d9;
+  
+  /* Accent Colors - Rewards */
+  --color-accent-orange: #ffa94d;
+  --color-accent-green: #69db7c;
+  --color-accent-red: #ff6b6b;
+  
+  /* Background Colors */
+  --color-bg-primary: #f8f9ff;
+  --color-bg-secondary: #fff4e6;
+  --color-bg-mint: #e7f9f5;
+  --color-bg-pink: #fff0f6;
+  
+  /* Text Colors */
+  --color-text-primary: #4a5568;
+  --color-text-dark: #2d3748;
+  
+  /* Shadows - Soft and playful */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+  
+  /* Border Radius - Very rounded */
+  --radius-sm: 16px;
+  --radius-md: 24px;
+  --radius-lg: 32px;
+  --radius-xl: 40px;
+  --radius-full: 9999px;
+}
+
+/* Playful Font - Using system rounded fonts */
+@layer base {
+  body {
+    font-family: 'Nunito', 'Comic Sans MS', 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--color-bg-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: var(--color-text-dark);
+  }
+  
+  h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+  
+  p {
+    color: var(--color-text-primary);
+    line-height: 1.6;
+  }
+  
+  /* Remove default button styles */
+  button {
+    font-family: inherit;
+  }
+}
+
+/* Custom animations for kids */
+@keyframes bounce-soft {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes pulse-grow {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Utility classes */
+.animate-bounce-soft {
+  animation: bounce-soft 2s infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 1s infinite;
+}
+
+.animate-pulse-grow {
+  animation: pulse-grow 2s infinite;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
