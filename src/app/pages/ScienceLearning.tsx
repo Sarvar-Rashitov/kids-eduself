@@ -61,29 +61,29 @@ export function ScienceLearning() {
     <div className={`min-h-screen bg-gradient-to-br ${current.bgColor} pb-24`}>
       {/* Header */}
       <div className="bg-white rounded-b-[3rem] shadow-lg p-6 mb-6">
-        <div className="max-w-md mx-auto flex items-center justify-between">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={() => {
               audioService.playClick();
               navigate("/home");
             }}
-            className="p-3 bg-gray-100 rounded-2xl"
+            className="p-3 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-colors"
           >
             <ChevronLeft className="h-6 w-6 text-gray-700" />
           </button>
           
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
             <span>🔬</span>
             Ilm-fan
           </h1>
 
-          <div className="text-sm font-bold text-purple-600">
+          <div className="text-sm md:text-base font-bold text-purple-600">
             {currentTopic + 1}/{scienceTopics.length}
           </div>
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-6">
+      <div className="max-w-4xl mx-auto px-6">
         {/* Character helper */}
         <motion.div
           key={currentTopic}
@@ -93,114 +93,64 @@ export function ScienceLearning() {
         >
           <CharacterMascot mood="excited" size="sm" />
           <div className="bg-white rounded-2xl p-3 shadow-sm flex-1">
-            <p className="text-lg font-semibold text-gray-800">
+            <p className="text-lg md:text-xl font-semibold text-gray-800">
               Keling, {current.title} haqida bilib olaylik! 🎯
             </p>
           </div>
         </motion.div>
 
-        {/* Main Topic Card */}
-        <motion.div
-          key={currentTopic}
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: "spring", duration: 0.8 }}
-          className={`
-            bg-gradient-to-br ${current.color}
-            rounded-[4rem] p-12 shadow-2xl mb-8
-            text-center relative overflow-hidden
-          `}
-        >
-          {/* Decorative elements */}
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full" />
-          <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white/10 rounded-full" />
-
-          {/* Main emoji */}
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
+          {/* Main Topic Card */}
           <motion.div
-            animate={{ 
-              scale: [1, 1.1, 1],
-              rotate: [0, 5, -5, 0] 
-            }}
-            transition={{ repeat: Infinity, duration: 3 }}
-            className="text-[10rem] mb-4 relative z-10"
+            key={currentTopic}
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", duration: 0.8 }}
+            className={`
+              bg-gradient-to-br ${current.color}
+              rounded-[4rem] p-12 shadow-2xl
+              text-center relative overflow-hidden
+            `}
           >
-            {current.emoji}
+            {/* Decorative elements */}
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full" />
+            <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white/10 rounded-full" />
+
+            {/* Main emoji */}
+            <motion.div
+              animate={{ 
+                scale: [1, 1.1, 1],
+                rotate: [0, 5, -5, 0] 
+              }}
+              transition={{ repeat: Infinity, duration: 3 }}
+              className="text-[8rem] md:text-[10rem] mb-4 relative z-10"
+            >
+              {current.emoji}
+            </motion.div>
+
+            {/* Title */}
+            <div className="text-4xl md:text-5xl font-bold text-white relative z-10">
+              {current.title}
+            </div>
+
+            {/* Sound button */}
+            <div className="flex justify-center relative z-10 mt-6">
+              <SoundButton onClick={playSound} size="lg" />
+            </div>
           </motion.div>
 
-          {/* Title */}
-          <div className="text-5xl font-bold text-white mb-2 relative z-10">
-            {current.title}
-          </div>
-          <div className="text-xl text-white/80 mb-4 relative z-10">
-            {current.titleEnglish}
-          </div>
-
-          {/* Sound button */}
-          <div className="flex justify-center relative z-10">
-            <SoundButton onClick={playSound} size="lg" />
-          </div>
-        </motion.div>
-
-        {/* Description */}
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white rounded-3xl p-6 shadow-lg mb-6"
-        >
-          <p className="text-xl text-gray-800 text-center leading-relaxed">
-            {current.description}
-          </p>
-        </motion.div>
-
-        {/* Fun Facts */}
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white rounded-3xl p-6 shadow-lg mb-6"
-        >
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <span>💡</span>
-            Qiziqarli faktlar:
-          </h3>
-          
-          <div className="space-y-3">
-            {current.facts.map((fact, index) => (
-              <motion.div
-                key={index}
-                initial={{ x: -50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.7 + index * 0.1 }}
-                className={`
-                  bg-gradient-to-r ${current.color}
-                  rounded-2xl p-4 text-white font-semibold text-lg
-                  shadow-md
-                `}
-              >
-                {fact}
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Experiment */}
-        {current.experiment && (
+          {/* Description */}
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-6 shadow-lg mb-6"
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-3xl p-6 md:p-8 shadow-lg flex items-center"
           >
-            <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <span>🧪</span>
-              Tajriba:
-            </h3>
-            <p className="text-gray-700">
-              {current.experiment}
+            <p className="text-xl md:text-2xl text-gray-800 text-center leading-relaxed">
+              {current.description}
             </p>
           </motion.div>
-        )}
+        </div>
 
         {/* Quiz */}
         {current.quiz && !showQuiz && (
@@ -220,22 +170,22 @@ export function ScienceLearning() {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="bg-white rounded-3xl p-6 shadow-lg mb-6"
+            className="bg-white rounded-3xl p-6 md:p-8 shadow-lg mb-6"
           >
-            <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+            <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
               {current.quiz.question}
             </h3>
             
             <div className="space-y-3">
               {current.quiz.options.map((option, index) => (
                 <motion.button
-                  key={index}
+                  key={`quiz-${currentTopic}-option-${index}`}
                   whileHover={{ scale: selectedAnswer === null ? 1.02 : 1 }}
                   whileTap={{ scale: selectedAnswer === null ? 0.98 : 1 }}
                   onClick={() => handleQuizAnswer(index)}
                   disabled={selectedAnswer !== null}
                   className={`
-                    w-full p-4 rounded-2xl font-semibold text-lg
+                    w-full p-4 md:p-5 rounded-2xl font-semibold text-lg md:text-xl
                     transition-all shadow-md
                     ${
                       selectedAnswer === index
@@ -257,7 +207,7 @@ export function ScienceLearning() {
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-4 text-center font-semibold text-lg"
+                className="mt-4 text-center font-semibold text-lg md:text-xl"
               >
                 {selectedAnswer === current.quiz.correct
                   ? "✅ To'g'ri javob! +2 yulduz"

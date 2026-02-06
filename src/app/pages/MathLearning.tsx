@@ -54,34 +54,34 @@ export function MathLearning() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 pb-24">
       {/* Header */}
       <div className="bg-white rounded-b-[3rem] shadow-lg p-6 mb-6">
-        <div className="max-w-md mx-auto flex items-center justify-between">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={() => {
               audioService.playClick();
               navigate("/home");
             }}
-            className="p-3 bg-gray-100 rounded-2xl"
+            className="p-3 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-colors"
           >
             <ChevronLeft className="h-6 w-6 text-gray-700" />
           </button>
           
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
             <span>➕</span>
             Matematika
           </h1>
 
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-purple-600">
+            <span className="text-2xl md:text-3xl font-bold text-purple-600">
               {score}
             </span>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm md:text-base text-gray-600">
               /{mathQuestions.length}
             </span>
           </div>
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-6">
+      <div className="max-w-4xl mx-auto px-6">
         {/* Character helper */}
         <motion.div
           key={`${currentQuestion}-${isCorrect}`}
@@ -94,7 +94,7 @@ export function MathLearning() {
             size="sm" 
           />
           <div className="bg-white rounded-2xl p-3 shadow-sm flex-1">
-            <p className="text-lg font-semibold text-gray-800">
+            <p className="text-lg md:text-xl font-semibold text-gray-800">
               {isCorrect === null 
                 ? "Sanab ko'ring va javobni toping! 🤔"
                 : isCorrect 
@@ -112,33 +112,31 @@ export function MathLearning() {
           animate={{ scale: 1 }}
           className={`
             bg-gradient-to-br ${current.color}
-            rounded-[4rem] p-8 shadow-2xl mb-8
+            rounded-[4rem] p-8 md:p-12 shadow-2xl mb-8
             text-center
           `}
         >
-          <div className="text-6xl font-bold text-white mb-6">
+          <div className="text-5xl md:text-6xl font-bold text-white mb-6">
             {current.question}
           </div>
           
           {/* Visual representation */}
-          <div className="space-y-4">
-            <div className="text-5xl">{current.emoji1}</div>
-            <div className="text-4xl text-white/80">{current.operation}</div>
-            <div className="text-5xl">{current.emoji2}</div>
-          </div>
+          <div className="text-7xl md:text-8xl mb-4">{current.emoji1}</div>
+          <div className="text-4xl md:text-5xl text-white/80 mb-4">{current.operation}</div>
+          <div className="text-7xl md:text-8xl">{current.emoji2}</div>
         </motion.div>
 
         {/* Answer options */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          {current.answers.map((answer) => (
+        <div className="grid grid-cols-3 gap-4 md:gap-6 mb-6 max-w-2xl mx-auto">
+          {current.answers.map((answer, answerIndex) => (
             <motion.button
-              key={answer}
+              key={`answer-${currentQuestion}-${answerIndex}`}
               whileHover={{ scale: selectedAnswer === null ? 1.05 : 1 }}
               whileTap={{ scale: selectedAnswer === null ? 0.95 : 1 }}
               onClick={() => handleAnswer(answer)}
               disabled={selectedAnswer !== null}
               className={`
-                relative py-8 rounded-3xl font-bold text-4xl
+                relative py-8 md:py-10 rounded-3xl font-bold text-4xl md:text-5xl
                 transition-all shadow-lg
                 ${
                   selectedAnswer === answer
@@ -177,8 +175,8 @@ export function MathLearning() {
         </div>
 
         {/* Progress */}
-        <div className="bg-white rounded-3xl p-4 shadow-md">
-          <p className="text-center text-sm text-gray-600 mb-2">
+        <div className="bg-white rounded-3xl p-4 md:p-6 shadow-md max-w-2xl mx-auto">
+          <p className="text-center text-sm md:text-base text-gray-600 mb-2">
             Savol {currentQuestion + 1} / {mathQuestions.length}
           </p>
           <div className="flex gap-2">

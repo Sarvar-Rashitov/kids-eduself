@@ -46,13 +46,13 @@ export function ProgressRewards() {
   ];
 
   const weekData = [
-    { day: "Du", progress: Math.min(progress.subjectProgress.alphabet * 10, 100) },
-    { day: "Se", progress: Math.min(progress.subjectProgress.numbers * 10, 100) },
-    { day: "Ch", progress: Math.min(progress.subjectProgress.speaking * 10, 100) },
-    { day: "Pa", progress: Math.min(progress.subjectProgress.math * 10, 100) },
-    { day: "Ju", progress: Math.min(progress.subjectProgress.science * 10, 100) },
-    { day: "Sh", progress: Math.min(progress.subjectProgress.language * 10, 100) },
-    { day: "Ya", progress: Math.min(progress.totalStars, 100) },
+    { day: "Du", progress: Math.min((progress.subjectProgress.alphabet || 0) * 10, 100) },
+    { day: "Se", progress: Math.min((progress.subjectProgress.numbers || 0) * 10, 100) },
+    { day: "Ch", progress: Math.min((progress.subjectProgress.speaking || 0) * 10, 100) },
+    { day: "Pa", progress: Math.min((progress.subjectProgress.math || 0) * 10, 100) },
+    { day: "Ju", progress: Math.min((progress.subjectProgress.science || 0) * 10, 100) },
+    { day: "Sh", progress: Math.min((progress.subjectProgress.language || 0) * 10, 100) },
+    { day: "Ya", progress: Math.min((progress.totalStars || 0) * 2, 100) },
   ];
 
   const todayStars = Math.min(progress.totalStars % 5, 5);

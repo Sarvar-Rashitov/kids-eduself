@@ -1,16 +1,18 @@
 import { motion } from "motion/react";
-import { useState, useEffect } from "react";
 import { CharacterMascot } from "@/app/components/CharacterMascot";
 import { SubjectCard } from "@/app/components/SubjectCard";
 import { ProgressStars } from "@/app/components/ProgressStars";
 import { KidsNavBar } from "@/app/components/KidsNavBar";
-import { Trophy } from "lucide-react";
+import { Trophy, User } from "lucide-react";
+import { useNavigate } from "react-router";
+import { useState, useEffect } from "react";
 import { authService } from "@/services/authService";
 import { audioService } from "@/services/audioService";
-import type { User, UserProgress } from "@/services/authService";
+import type { User as UserType, UserProgress } from "@/services/authService";
 
 export function Home() {
-  const [user, setUser] = useState<User | null>(null);
+  const navigate = useNavigate();
+  const [user, setUser] = useState<UserType | null>(null);
   const [progress, setProgress] = useState<UserProgress | null>(null);
 
   useEffect(() => {
@@ -83,17 +85,31 @@ export function Home() {
               </div>
             </div>
             
-            <motion.button 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => {
-                audioService.playClick();
-                window.location.href = "/progress";
-              }}
-              className="p-3 bg-yellow-100 rounded-2xl"
-            >
-              <Trophy className="h-6 w-6 text-yellow-600" />
-            </motion.button>
+            <div className="flex gap-2">
+              <motion.button 
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  audioService.playClick();
+                  navigate("/progress");
+                }}
+                className="p-3 bg-yellow-100 rounded-2xl"
+              >
+                <Trophy className="h-6 w-6 text-yellow-600" />
+              </motion.button>
+              
+              <motion.button 
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  audioService.playClick();
+                  navigate("/parent");
+                }}
+                className="p-3 bg-purple-100 rounded-2xl"
+              >
+                <User className="h-6 w-6 text-purple-600" />
+              </motion.button>
+            </div>
           </div>
 
           {/* Today's progress */}

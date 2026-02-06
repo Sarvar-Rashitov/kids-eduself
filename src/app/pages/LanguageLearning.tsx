@@ -140,7 +140,7 @@ export function LanguageLearning() {
               </div>
               
               <div className="text-xl text-white/80 mb-4 relative z-10">
-                {current.pronunciation}
+                {current.pronunciationEn}
               </div>
 
               <div className="text-white/80 text-lg relative z-10">
@@ -234,8 +234,10 @@ export function LanguageLearning() {
           
           {/* Example sentence */}
           <div className="bg-blue-50 rounded-2xl p-4">
-            <p className="text-sm text-gray-600 mb-1">Misol:</p>
-            <p className="text-gray-800 italic">"{current.example}"</p>
+            <p className="text-sm text-gray-600 mb-1">Misol (Inglizcha):</p>
+            <p className="text-gray-800 italic mb-2">"{current.exampleEn}"</p>
+            <p className="text-sm text-gray-600 mb-1">Misol (O'zbekcha):</p>
+            <p className="text-gray-800 italic">"{current.exampleUz}"</p>
           </div>
           
           <p className="text-center text-sm text-gray-600 mt-3">
@@ -256,9 +258,9 @@ export function LanguageLearning() {
           {/* Progress */}
           <div className="bg-white rounded-2xl p-4 shadow-md">
             <div className="flex gap-2 mb-2">
-              {languageWords.map((_, index) => (
+              {languageWords.map((word, index) => (
                 <div
-                  key={index}
+                  key={`progress-${word.id}-${index}`}
                   className={`
                     flex-1 h-2 rounded-full transition-all
                     ${index <= currentWord 

@@ -79,30 +79,74 @@ class SpeechService {
     this.synthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    utterance.rate = 0.9; // Slightly slower for kids
-    utterance.pitch = 1.1; // Slightly higher pitch for friendliness
+    
+    // For Uzbek language, we need to be creative with voice selection
+    // since true Uzbek voices are rare
+    if (lang === 'uz-UZ' || lang === 'uz') {
+      // Use a neutral voice and modify the text slightly for better pronunciation
+      utterance.lang = 'ru-RU'; // Russian is phonetically closer to Uzbek
+      utterance.rate = 0.75; // Slower for clarity
+      utterance.pitch = 1.1; // Slightly higher pitch
+    } else if (lang.startsWith('ru')) {
+      utterance.lang = 'ru-RU';
+      utterance.rate = 0.85;
+      utterance.pitch = 1.0;
+    } else if (lang.startsWith('en')) {
+      utterance.lang = 'en-US';
+      utterance.rate = 0.85;
+      utterance.pitch = 1.0;
+    } else {
+      utterance.lang = lang;
+      utterance.rate = 0.85;
+      utterance.pitch = 1.0;
+    }
+    
     utterance.volume = 1;
 
     if (onEnd) {
       utterance.onend = onEnd;
     }
 
-    // Get available voices
-    const voices = this.synthesis.getVoices();
-    
-    // Try to find Uzbek or Russian voice, fallback to English
-    const preferredVoice = voices.find(voice => 
-      voice.lang.startsWith('uz') || 
-      voice.lang.startsWith('ru') ||
-      voice.lang.startsWith('en')
-    );
-    
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
-    }
+    // Wait for voices to load
+    const setVoice = () => {
+      const voices = this.synthesis.getVoices();
+      
+      let selectedVoice = null;
+      
+      // For Uzbek, prefer Russian or Turkish voices
+      if (lang === 'uz-UZ' || lang === 'uz') {
+        selectedVoice = voices.find(voice => 
+          voice.lang.startsWith('ru') && 
+          (voice.name.includes('Female') || voice.name.includes('Anna') || voice.name.includes('Google'))
+        ) || voices.find(voice => voice.lang.startsWith('ru'));
+      } else if (lang.startsWith('ru')) {
+        selectedVoice = voices.find(voice => 
+          voice.lang.startsWith('ru') && 
+          (voice.name.includes('Female') || voice.name.includes('Google'))
+        ) || voices.find(voice => voice.lang.startsWith('ru'));
+      } else if (lang.startsWith('en')) {
+        selectedVoice = voices.find(voice => 
+          voice.lang.startsWith('en') && 
+          (voice.name.includes('Female') || voice.name.includes('Google'))
+        ) || voices.find(voice => voice.lang.startsWith('en'));
+      }
+      
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+        console.log('Selected voice:', selectedVoice.name, selectedVoice.lang);
+      }
+      
+      this.synthesis.speak(utterance);
+    };
 
-    this.synthesis.speak(utterance);
+    // Check if voices are loaded
+    const voices = this.synthesis.getVoices();
+    if (voices.length > 0) {
+      setVoice();
+    } else {
+      // Wait for voices to load
+      this.synthesis.onvoiceschanged = setVoice;
+    }
   }
 
   // Analyze pronunciation (AI-powered)
