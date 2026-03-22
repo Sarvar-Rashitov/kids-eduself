@@ -27,31 +27,33 @@ export function ProgressRewards() {
     );
   }
 
+  const completedCount = Object.keys(progress.completedLessons).length;
+
   const badges = [
-    { icon: "🌟", title: "Birinchi qadam", earned: progress.completedLessons.length >= 1 },
-    { icon: "🎯", title: "5 dars", earned: progress.completedLessons.length >= 5 },
-    { icon: "🏆", title: "10 dars", earned: progress.completedLessons.length >= 10 },
+    { icon: "🌟", title: "Birinchi qadam", earned: completedCount >= 1 },
+    { icon: "🎯", title: "5 dars", earned: completedCount >= 5 },
+    { icon: "🏆", title: "10 dars", earned: completedCount >= 10 },
     { icon: "⚡", title: "Tez o'rganuvchi", earned: progress.level >= 3 },
-    { icon: "🎨", title: "San'atkor", earned: progress.subjectProgress.alphabet >= 5 },
-    { icon: "🔥", title: "7 kun ketma-ket", earned: progress.streakDays >= 7 },
+    { icon: "🎨", title: "San'atkor", earned: (progress.subjectProgress?.alphabet || 0) >= 5 },
+    { icon: "🔥", title: "7 kun ketma-ket", earned: (progress.streakDays || 0) >= 7 },
     { icon: "📚", title: "Kitobxon", earned: progress.totalStars >= 50 },
-    { icon: "🎵", title: "Musiqachi", earned: progress.subjectProgress.speaking >= 5 },
+    { icon: "🎵", title: "Musiqachi", earned: (progress.subjectProgress?.speaking || 0) >= 5 },
   ];
 
   const stats = [
     { icon: Trophy, label: "Jami yulduzlar", value: String(progress.totalStars), color: "from-yellow-400 to-orange-400" },
     { icon: Star, label: "Darajangiz", value: String(progress.level), color: "from-purple-400 to-pink-400" },
-    { icon: Zap, label: "Ketma-ketlik", value: `${progress.streakDays} kun`, color: "from-blue-400 to-cyan-400" },
-    { icon: Target, label: "O'rganildi", value: String(progress.completedLessons.length), color: "from-green-400 to-emerald-400" },
+    { icon: Zap, label: "Ketma-ketlik", value: `${progress.streakDays || 0} kun`, color: "from-blue-400 to-cyan-400" },
+    { icon: Target, label: "O'rganildi", value: String(completedCount), color: "from-green-400 to-emerald-400" },
   ];
 
   const weekData = [
-    { day: "Du", progress: Math.min((progress.subjectProgress.alphabet || 0) * 10, 100) },
-    { day: "Se", progress: Math.min((progress.subjectProgress.numbers || 0) * 10, 100) },
-    { day: "Ch", progress: Math.min((progress.subjectProgress.speaking || 0) * 10, 100) },
-    { day: "Pa", progress: Math.min((progress.subjectProgress.math || 0) * 10, 100) },
-    { day: "Ju", progress: Math.min((progress.subjectProgress.science || 0) * 10, 100) },
-    { day: "Sh", progress: Math.min((progress.subjectProgress.language || 0) * 10, 100) },
+    { day: "Du", progress: Math.min((progress.subjectProgress?.alphabet || 0) * 10, 100) },
+    { day: "Se", progress: Math.min((progress.subjectProgress?.numbers || 0) * 10, 100) },
+    { day: "Ch", progress: Math.min((progress.subjectProgress?.speaking || 0) * 10, 100) },
+    { day: "Pa", progress: Math.min((progress.subjectProgress?.math || 0) * 10, 100) },
+    { day: "Ju", progress: Math.min((progress.subjectProgress?.science || 0) * 10, 100) },
+    { day: "Sh", progress: Math.min((progress.subjectProgress?.language || 0) * 10, 100) },
     { day: "Ya", progress: Math.min((progress.totalStars || 0) * 2, 100) },
   ];
 

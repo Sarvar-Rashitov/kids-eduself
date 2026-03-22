@@ -81,7 +81,7 @@ export const mathQuestions: MathQuestion[] = [
     color: 'from-blue-400 to-cyan-400',
     difficulty: 'easy',
   },
-  
+
   // Easy Subtraction
   {
     id: 'math_6',
@@ -176,7 +176,7 @@ export const mathQuestions: MathQuestion[] = [
     color: 'from-cyan-400 to-blue-400',
     difficulty: 'medium',
   },
-  
+
   // Medium Subtraction
   {
     id: 'math_13',
@@ -214,10 +214,10 @@ export const mathQuestions: MathQuestion[] = [
     num2: 3,
     answers: [4, 5, 6],
     correct: 5,
-    color: 'from-amber-400 to-brown-400',
+    color: 'from-amber-400 to-amber-700',
     difficulty: 'medium',
   },
-  
+
   // Hard Addition
   {
     id: 'math_16',
@@ -284,7 +284,7 @@ export const mathQuestions: MathQuestion[] = [
     color: 'from-cyan-500 to-blue-500',
     difficulty: 'hard',
   },
-  
+
   // Hard Subtraction
   {
     id: 'math_21',

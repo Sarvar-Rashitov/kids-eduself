@@ -12,6 +12,7 @@ export function Welcome() {
   const [name, setName] = useState("");
   const [age, setAge] = useState(5);
   const [selectedAvatar, setSelectedAvatar] = useState("👦");
+  const [isChecking, setIsChecking] = useState(true);
 
   const avatars = ["👦", "👧", "🧒", "👶", "🦸‍♂️", "🦸‍♀️", "🧙‍♂️", "🧙‍♀️"];
 
@@ -20,8 +21,19 @@ export function Welcome() {
     const currentUser = authService.getCurrentUser();
     if (currentUser) {
       navigate("/home");
+    } else {
+      setIsChecking(false);
     }
   }, [navigate]);
+
+  // Show loading while checking
+  if (isChecking) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex items-center justify-center">
+        <div className="text-6xl animate-bounce">🎈</div>
+      </div>
+    );
+  }
 
   const handleStart = () => {
     audioService.playClick();

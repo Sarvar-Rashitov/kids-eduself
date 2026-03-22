@@ -6,7 +6,8 @@ export function KidsNavBar() {
   const location = useLocation();
 
   const navItems = [
-    { icon: "🏠", label: "Bosh", path: "/home", color: "from-blue-400 to-cyan-400" },
+    { icon: "🏠", label: "Bosh",     path: "/home",     color: "from-blue-400 to-cyan-400" },
+    { icon: "🎮", label: "O'yinlar", path: "/games",    color: "from-purple-400 to-pink-400" },
     { icon: "🏆", label: "Yutuqlar", path: "/progress", color: "from-yellow-400 to-orange-400" },
   ];
 

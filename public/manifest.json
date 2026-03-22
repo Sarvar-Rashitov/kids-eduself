@@ -1,0 +1,47 @@
+{
+  "name": "EduSelf Kids - Bolalar uchun ta'lim",
+  "short_name": "EduSelf Kids",
+  "description": "4-10 yoshli bolalar uchun o'zbek, rus va ingliz tillarida ta'lim ilovasi",
+  "start_url": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "background_color": "#f0f9ff",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "uz",
+  "categories": ["education", "kids"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "EduSelf Kids bosh sahifasi"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Alifbo",
+      "short_name": "Alifbo",
+      "description": "O'zbek alifbosini o'rganish",
+      "url": "/alphabet",
+      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🔤</text></svg>", "sizes": "any" }]
+    },
+    {
+      "name": "Raqamlar",
+      "short_name": "Raqamlar",
+      "description": "Raqamlarni o'rganish",
+      "url": "/numbers",
+      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🔢</text></svg>", "sizes": "any" }]
+    }
+  ]
+}

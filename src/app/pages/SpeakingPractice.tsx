@@ -4,12 +4,13 @@ import { ChevronLeft, Star } from "lucide-react";
 import { VoiceButton } from "@/app/components/VoiceButton";
 import { CharacterMascot } from "@/app/components/CharacterMascot";
 import { LargeButton } from "@/app/components/LargeButton";
+import { ProgressStars } from "@/app/components/ProgressStars";
 import { KidsNavBar } from "@/app/components/KidsNavBar";
 import { useNavigate } from "react-router";
 import { speechService } from "@/services/speechService";
 import { audioService } from "@/services/audioService";
 import { authService } from "@/services/authService";
-import { alphabetLessons } from "@/data/alphabetContent";
+import { getWordsForSpeaking } from "@/data/languageContent";
 
 export function SpeakingPractice() {
   const navigate = useNavigate();
@@ -18,9 +19,9 @@ export function SpeakingPractice() {
   const [score, setScore] = useState<number | null>(null);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [attempts, setAttempts] = useState(0);
+  const [showReward, setShowReward] = useState(false);
 
-  // Get random words from alphabet
-  const practiceWords = alphabetLessons.slice(0, 5);
+  const practiceWords = getWordsForSpeaking(10);
   const currentWord = practiceWords[currentWordIndex];
 
   useEffect(() => {
@@ -34,9 +35,7 @@ export function SpeakingPractice() {
     audioService.playClick();
 
     speechService.startListening(
-      (transcript) => {
-        handleStop(transcript);
-      },
+      (transcript) => handleStop(transcript),
       (error) => {
         console.error('Speech recognition error:', error);
         setIsListening(false);
@@ -50,15 +49,10 @@ export function SpeakingPractice() {
     speechService.stopListening();
 
     if (transcript) {
-      // Analyze pronunciation
-      const result = speechService.analyzePronunciation(
-        transcript,
-        currentWord.word
-      );
-
+      const result = speechService.analyzePronunciation(transcript, currentWord.english);
       setScore(result.score);
       setFeedback(result.feedback);
-      setAttempts(attempts + 1);
+      setAttempts(prev => prev + 1);
 
       if (result.score >= 90) {
         audioService.playSuccess();
@@ -68,24 +62,24 @@ export function SpeakingPractice() {
         authService.addStars(1);
       }
 
-      // Complete lesson after 3 attempts or perfect score
       if (attempts >= 2 || result.score >= 95) {
-        authService.completeLesson(`speaking_${currentWord.letter}`, 'speaking');
+        authService.completeLesson(`speaking_${currentWord.id}`, 'speaking');
       }
     }
   };
 
   const handleNext = () => {
     audioService.playClick();
-    
     if (currentWordIndex < practiceWords.length - 1) {
-      setCurrentWordIndex(currentWordIndex + 1);
+      setCurrentWordIndex(prev => prev + 1);
       setFeedback(null);
       setScore(null);
       setAttempts(0);
     } else {
+      setShowReward(true);
       audioService.playReward();
-      navigate("/home");
+      authService.addStars(5);
+      setTimeout(() => navigate("/home"), 3000);
     }
   };
 
@@ -97,27 +91,51 @@ export function SpeakingPractice() {
 
   const playExample = () => {
     audioService.playClick();
-    speechService.speak(currentWord.word, 'uz-UZ');
+    speechService.speak(currentWord.english, 'en-US');
   };
+
+  if (showReward) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-100 flex flex-col items-center justify-center p-6">
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-center">
+          <CharacterMascot mood="celebrating" size="lg" animate />
+          <h2 className="text-4xl font-bold text-gray-800 mt-6 mb-4">Zo'r! 🎤</h2>
+          <p className="text-2xl text-gray-700 mb-6">Barcha so'zlarni talaffuz qildingiz!</p>
+          <ProgressStars earned={5} total={5} size="lg" />
+          <p className="text-xl text-gray-600 mt-6">+5 yulduz qo'shildi! ⭐</p>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 pb-24">
       {/* Header */}
       <div className="bg-white rounded-b-[3rem] shadow-lg p-6 mb-6">
-        <div className="max-w-md mx-auto flex items-center justify-between">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => {
-              audioService.playClick();
-              navigate("/home");
-            }}
-            className="p-3 bg-gray-100 rounded-2xl"
+            onClick={() => { audioService.playClick(); navigate("/home"); }}
+            className="p-3 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-colors"
           >
             <ChevronLeft className="h-6 w-6 text-gray-700" />
           </button>
-          
-          <h1 className="text-2xl font-bold text-gray-800">
-            Gapirish 🎤
-          </h1>
+
+          <div className="flex-1 mx-4">
+            <div className="flex gap-1">
+              {practiceWords.map((_, index) => (
+                <div
+                  key={`prog-${index}`}
+                  className={`flex-1 h-2 rounded-full ${
+                    index < currentWordIndex
+                      ? "bg-gradient-to-r from-green-400 to-emerald-400"
+                      : index === currentWordIndex
+                        ? "bg-gradient-to-r from-blue-400 to-purple-400"
+                        : "bg-gray-200"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
 
           <div className="text-sm font-bold text-purple-600">
             {currentWordIndex + 1}/{practiceWords.length}
@@ -125,173 +143,137 @@ export function SpeakingPractice() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-6">
-        {/* Character helper */}
+      <div className="max-w-4xl mx-auto px-6">
+        {/* Character */}
         <motion.div
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="flex items-center gap-4 mb-8 bg-white rounded-3xl p-4 shadow-md"
+          className="flex items-center gap-4 mb-6 bg-white rounded-3xl p-4 shadow-md"
         >
           <CharacterMascot mood="happy" size="sm" animate={!isListening} />
           <div className="bg-white rounded-2xl p-3 shadow-sm flex-1">
             <p className="text-lg font-semibold text-gray-800">
-              {isListening 
-                ? "Eshitmoqdaman... 👂" 
+              {isListening
+                ? "Eshitmoqdaman... 👂"
                 : "Menga qarab aytib ko'ring! 😊"
               }
             </p>
           </div>
         </motion.div>
 
-        {/* Word to pronounce */}
-        <motion.div
-          key={currentWordIndex}
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className={`
-            bg-gradient-to-br ${currentWord.color}
-            rounded-[4rem] p-12 shadow-2xl mb-6
-            text-center
-          `}
-        >
-          <div className="text-8xl mb-6">{currentWord.emoji}</div>
-          <div className="text-6xl font-bold text-white mb-4">
-            {currentWord.word}
-          </div>
-          <div className="text-2xl text-white/80 mb-6">
-            {currentWord.wordEnglish}
-          </div>
-          
-          {/* Play example button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={playExample}
-            className="px-6 py-3 bg-white/20 backdrop-blur-sm rounded-2xl text-white font-semibold"
-          >
-            Namunani eshiting 🔊
-          </motion.button>
-        </motion.div>
-
-        {/* Voice Button */}
-        <div className="mb-8">
-          <VoiceButton
-            onStart={handleStart}
-            onStop={() => handleStop()}
-            isListening={isListening}
-          />
-        </div>
-
-        {/* Feedback Section */}
-        {feedback && score !== null && (
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Word Display Card */}
           <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            key={currentWordIndex}
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", duration: 0.8 }}
             className={`
-              rounded-3xl p-6 mb-6 text-center
-              ${score >= 90 
-                ? "bg-gradient-to-br from-green-100 to-emerald-100" 
-                : score >= 75
-                  ? "bg-gradient-to-br from-yellow-100 to-orange-100"
-                  : "bg-gradient-to-br from-blue-100 to-purple-100"
-              }
+              bg-gradient-to-br ${currentWord.color}
+              rounded-[4rem] p-10 shadow-2xl
+              text-center relative overflow-hidden
             `}
           >
-            {/* Score stars */}
-            <div className="flex justify-center gap-2 mb-4">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <motion.div
-                  key={star}
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: star * 0.1 }}
-                >
-                  <Star
-                    className={`h-8 w-8 ${
-                      star <= Math.floor(score / 20)
-                        ? "fill-yellow-400 text-yellow-400"
-                        : "fill-gray-300 text-gray-300"
-                    }`}
-                  />
-                </motion.div>
-              ))}
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full" />
+            <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white/10 rounded-full" />
+
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="text-[7rem] md:text-[8rem] mb-4 relative z-10"
+            >
+              {currentWord.emoji}
+            </motion.div>
+
+            <div className="text-5xl md:text-6xl font-bold text-white mb-3 relative z-10">
+              {currentWord.english}
+            </div>
+            <div className="text-xl text-white/80 mb-6 relative z-10">
+              {currentWord.uzbek}
             </div>
 
-            {/* Score */}
-            <div className="text-5xl font-bold text-gray-800 mb-3">
-              {score}%
-            </div>
-
-            {/* Feedback text */}
-            <p className="text-xl font-semibold text-gray-700 mb-4">
-              {feedback}
-            </p>
-
-            {/* Character reaction */}
-            <div className="flex justify-center mb-4">
-              <CharacterMascot
-                mood={score >= 90 ? "celebrating" : score >= 75 ? "excited" : "happy"}
-                size="sm"
-                animate
-              />
-            </div>
-
-            {/* Stars earned */}
-            {score >= 75 && (
-              <p className="text-lg text-gray-700">
-                +{score >= 90 ? 2 : 1} yulduz qo'shildi! ⭐
-              </p>
-            )}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={playExample}
+              className="px-6 py-3 bg-white/20 backdrop-blur-sm rounded-2xl text-white font-semibold relative z-10"
+            >
+              Namunani eshiting 🔊
+            </motion.button>
           </motion.div>
-        )}
 
-        {/* Action buttons */}
-        <div className="space-y-4">
-          {feedback && (
-            <>
-              <LargeButton
-                color="green"
-                icon="🔄"
-                onClick={handleTryAgain}
-              >
-                Yana bir marta
-              </LargeButton>
-              
-              <LargeButton
-                color="blue"
-                icon="➡️"
-                onClick={handleNext}
-              >
-                {currentWordIndex < practiceWords.length - 1 ? "Keyingi so'z" : "Tugadi!"}
-              </LargeButton>
-            </>
-          )}
+          {/* Voice + Feedback */}
+          <div className="flex flex-col gap-6">
+            {/* Voice Button */}
+            <VoiceButton
+              onStart={handleStart}
+              onStop={() => handleStop()}
+              isListening={isListening}
+            />
 
-          {/* Browser support warning */}
-          {!speechService.isSupported() && (
-            <div className="bg-yellow-100 border-2 border-yellow-400 rounded-2xl p-4 text-center">
-              <p className="text-sm text-yellow-800">
-                ⚠️ Brauzeringiz ovoz yozishni qo'llab-quvvatlamaydi. Chrome yoki Edge dan foydalaning.
-              </p>
-            </div>
-          )}
-        </div>
+            {/* Browser warning */}
+            {!speechService.isSupported() && (
+              <div className="bg-yellow-100 border-2 border-yellow-400 rounded-2xl p-4 text-center">
+                <p className="text-sm text-yellow-800">
+                  ⚠️ Chrome yoki Edge dan foydalaning.
+                </p>
+              </div>
+            )}
 
-        {/* Progress */}
-        <div className="mt-6 bg-white rounded-2xl p-4 shadow-md">
-          <div className="flex gap-2 mb-2">
-            {practiceWords.map((_, index) => (
-              <div
-                key={index}
-                className={`flex-1 h-2 rounded-full ${
-                  index < currentWordIndex
-                    ? "bg-gradient-to-r from-green-400 to-emerald-400"
-                    : index === currentWordIndex
-                      ? "bg-gradient-to-r from-blue-400 to-purple-400"
-                      : "bg-gray-200"
+            {/* Feedback */}
+            {feedback && score !== null && (
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className={`rounded-3xl p-6 text-center ${
+                  score >= 90
+                    ? "bg-gradient-to-br from-green-100 to-emerald-100"
+                    : score >= 75
+                      ? "bg-gradient-to-br from-yellow-100 to-orange-100"
+                      : "bg-gradient-to-br from-blue-100 to-purple-100"
                 }`}
-              />
-            ))}
+              >
+                {/* Stars */}
+                <div className="flex justify-center gap-1 mb-3">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <motion.div
+                      key={star}
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ delay: star * 0.1 }}
+                    >
+                      <Star
+                        className={`h-7 w-7 ${
+                          star <= Math.floor(score / 20)
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "fill-gray-300 text-gray-300"
+                        }`}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="text-4xl font-bold text-gray-800 mb-2">{score}%</div>
+                <p className="text-lg font-semibold text-gray-700">{feedback}</p>
+                {score >= 75 && (
+                  <p className="text-base text-gray-600 mt-2">
+                    +{score >= 90 ? 2 : 1} yulduz ⭐
+                  </p>
+                )}
+              </motion.div>
+            )}
+
+            {/* Action Buttons */}
+            {feedback && (
+              <div className="space-y-3">
+                <LargeButton color="green" icon="🔄" onClick={handleTryAgain}>
+                  Yana bir marta
+                </LargeButton>
+                <LargeButton color="blue" icon="➡️" onClick={handleNext}>
+                  {currentWordIndex < practiceWords.length - 1 ? "Keyingi so'z" : "Tugadi!"}
+                </LargeButton>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -32,10 +32,15 @@ class SpeechService {
   }
 
   // Start listening
-  startListening(onResult: (result: string) => void, onError?: (error: string) => void): void {
+  startListening(onResult: (result: string) => void, onError?: (error: string) => void, lang?: string): void {
     if (!this.recognition) {
       onError?.('Speech recognition not supported in this browser');
       return;
+    }
+
+    // Set language for recognition
+    if (lang) {
+      this.recognition.lang = lang;
     }
 
     this.isListening = true;

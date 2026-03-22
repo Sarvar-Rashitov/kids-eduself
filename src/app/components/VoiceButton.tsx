@@ -6,19 +6,26 @@ interface VoiceButtonProps {
   onStart?: () => void;
   onStop?: () => void;
   isListening?: boolean;
+  onClick?: () => void; // Add onClick support
 }
 
-export function VoiceButton({ onStart, onStop, isListening = false }: VoiceButtonProps) {
+export function VoiceButton({ onStart, onStop, isListening = false, onClick }: VoiceButtonProps) {
   const [isPressed, setIsPressed] = useState(false);
 
   const handlePress = () => {
     setIsPressed(true);
-    onStart?.();
+    if (onClick) {
+      onClick();
+    } else {
+      onStart?.();
+    }
   };
 
   const handleRelease = () => {
     setIsPressed(false);
-    onStop?.();
+    if (!onClick) {
+      onStop?.();
+    }
   };
 
   return (

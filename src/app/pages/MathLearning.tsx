@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ChevronLeft, Check, X } from "lucide-react";
 import { LargeButton } from "@/app/components/LargeButton";
 import { CharacterMascot } from "@/app/components/CharacterMascot";
@@ -17,6 +17,17 @@ export function MathLearning() {
   const [score, setScore] = useState(0);
 
   const current = mathQuestions[currentQuestion];
+
+  // Shuffle answers properly using Fisher-Yates - NEW random shuffle each render
+  const shuffledAnswers = useMemo(() => {
+    const arr = [...current.answers];
+    // True Fisher-Yates shuffle
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }, [currentQuestion, current.answers]);
 
   useEffect(() => {
     authService.updateStreak();
@@ -128,7 +139,7 @@ export function MathLearning() {
 
         {/* Answer options */}
         <div className="grid grid-cols-3 gap-4 md:gap-6 mb-6 max-w-2xl mx-auto">
-          {current.answers.map((answer, answerIndex) => (
+          {shuffledAnswers.map((answer, answerIndex) => (
             <motion.button
               key={`answer-${currentQuestion}-${answerIndex}`}
               whileHover={{ scale: selectedAnswer === null ? 1.05 : 1 }}
